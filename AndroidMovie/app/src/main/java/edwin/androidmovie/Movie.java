@@ -1,4 +1,4 @@
-package edwin.androidmovie.models;
+package edwin.androidmovie;
 
 import android.view.View;
 import android.widget.TextView;
@@ -8,8 +8,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Serializable;
-
-import edwin.androidmovie.R;
 
 /**
  * Created by Edwin on 8-4-2015.

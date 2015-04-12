@@ -1,4 +1,4 @@
-package edwin.androidmovie.adapters;
+package edwin.androidmovie;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,9 +7,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import java.util.List;
-
-import edwin.androidmovie.R;
-import edwin.androidmovie.models.Movie;
 
 /**
  * Created by Edwin on 8-4-2015.
@@ -45,14 +42,16 @@ public class SimpleAdapter extends ArrayAdapter<Movie> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-
         View v = convertView;
-        if (v == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.list_item, null);
+
+        if (v == null)
+        {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            v = inflater.inflate(R.layout.list_item, parent, false);
         }
 
         Movie movie = itemList.get(position);
+
         movie.ToView(v);
 
         return v;

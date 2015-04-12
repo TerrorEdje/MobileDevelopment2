@@ -1,4 +1,4 @@
-package edwin.androidmovie.models;
+package edwin.androidmovie;
 
 /**
  * Created by Edwin on 8-4-2015.
