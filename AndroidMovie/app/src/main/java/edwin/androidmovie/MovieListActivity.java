@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,9 +43,10 @@ public class MovieListActivity extends ActionBarActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.v("TEST", "TEST1111");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_list);
-
+        MovieListFragment movieListFragment = (MovieListFragment) getSupportFragmentManager().findFragmentById(R.id.movie_list);
         if (findViewById(R.id.movie_detail_container) != null) {
             // The detail container view will be present only in the
             // large-screen layouts (res/values-large and
@@ -54,8 +56,16 @@ public class MovieListActivity extends ActionBarActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            MovieListFragment movieListFragment = (MovieListFragment) getSupportFragmentManager().findFragmentById(R.id.movie_list);
             movieListFragment.setActivateOnItemClick(true);
+        }
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            String value = extras.getString("URL");
+            if (value != null)
+            {
+                movieListFragment.RunQuery(value);
+            }
         }
 
         // TODO: If exposing deep links into your app, handle intents here.

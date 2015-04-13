@@ -84,6 +84,11 @@ public class MovieListFragment extends ListFragment {
         adpt.notifyDataSetChanged();
     }
 
+    public void RunQuery(String url)
+    {
+        (new AsyncListViewLoader()).execute(url);
+    }
+
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -163,7 +168,10 @@ public class MovieListFragment extends ListFragment {
         @Override
         protected void onPostExecute(List<Movie> result) {
             super.onPostExecute(result);
-            dialog.dismiss();
+            if (dialog.isShowing())
+            {
+                dialog.dismiss();
+            }
             adpt.setItemList(result);
             adpt.notifyDataSetChanged();
         }

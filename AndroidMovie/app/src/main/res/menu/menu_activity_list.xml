@@ -6,8 +6,9 @@
         app:showAsAction="always|collapseActionView"
         android:icon="@drawable/ic_search"
         android:title="@string/search_hint"
+        android:hint="@string/search_hint"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
     <item android:id="@+id/likes_button"
         app:showAsAction="ifRoom"
-        android:title="Likes"/>
+        android:title="@string/likes"/>
 </menu>
