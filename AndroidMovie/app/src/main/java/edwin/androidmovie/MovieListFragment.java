@@ -78,6 +78,13 @@ public class MovieListFragment extends ListFragment {
         (new AsyncListViewLoader()).execute("http://yts.to/api/v2/list_movies.json?sort_by=rating");
     }
 
+    public void ChangeList(ArrayList<Movie> movies)
+    {
+        adpt.setItemList(movies);
+        adpt.notifyDataSetChanged();
+    }
+
+
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);

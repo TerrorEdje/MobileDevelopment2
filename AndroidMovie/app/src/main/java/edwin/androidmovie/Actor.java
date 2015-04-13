@@ -1,9 +1,11 @@
 package edwin.androidmovie;
 
+import java.io.Serializable;
+
 /**
  * Created by Edwin on 8-4-2015.
  */
-public class Actor {
+public class Actor implements Serializable {
     private String name;
     private String characterName;
 

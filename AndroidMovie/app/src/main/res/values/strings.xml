@@ -3,5 +3,6 @@
 
     <string name="app_name">AndroidMovie</string>
     <string name="title_movie_detail">Movie Detail</string>
+    <string name="search_hint">Search movies</string>
 
 </resources>

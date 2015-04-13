@@ -1,8 +1,18 @@
 package edwin.androidmovie;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.support.v7.widget.SearchView;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 
 /**
@@ -21,7 +31,7 @@ import android.support.v4.app.FragmentActivity;
  * {@link MovieListFragment.Callbacks} interface
  * to listen for item selections.
  */
-public class MovieListActivity extends FragmentActivity
+public class MovieListActivity extends ActionBarActivity
         implements MovieListFragment.Callbacks {
 
     /**
@@ -44,12 +54,41 @@ public class MovieListActivity extends FragmentActivity
 
             // In two-pane mode, list items should be given the
             // 'activated' state when touched.
-            ((MovieListFragment) getSupportFragmentManager()
-                    .findFragmentById(R.id.movie_list))
-                    .setActivateOnItemClick(true);
+            MovieListFragment movieListFragment = (MovieListFragment) getSupportFragmentManager().findFragmentById(R.id.movie_list);
+            movieListFragment.setActivateOnItemClick(true);
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_activity_list, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.likes_button) {
+            ArrayList<Movie> movies = new ArrayList<Movie>();
+            SharedPreferences prefs = getSharedPreferences("MOVIES", Context.MODE_PRIVATE);
+            try {
+                movies = (ArrayList<Movie>) ObjectSerializer.deserialize(prefs.getString("MOVIES", ObjectSerializer.serialize(new ArrayList<Movie>())));
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            MovieListFragment movieListFragment = (MovieListFragment) getSupportFragmentManager().findFragmentById(R.id.movie_list);
+            movieListFragment.ChangeList(movies);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
