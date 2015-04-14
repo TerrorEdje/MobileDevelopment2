@@ -14,8 +14,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
-
             <TextView android:id="@+id/title"
                 android:layout_width="wrap_content"
                 android:textStyle="bold"
@@ -92,6 +90,26 @@
                 android:layout_alignBaseline="@id/imdb"
                 android:text="@string/youtube"
                 android:layout_toRightOf="@id/imdb"/>
+
+            <TextView android:id="@+id/director"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/imdb" />
+
+            <TextView android:id="@+id/actorOne"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/director" />
+
+            <TextView android:id="@+id/actorTwo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/actorOne" />
+
+            <TextView android:id="@+id/actorThree"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/actorTwo" />
 
         </RelativeLayout>
     </ScrollView>

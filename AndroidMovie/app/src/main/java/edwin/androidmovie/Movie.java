@@ -69,10 +69,13 @@ public class Movie implements Serializable{
                     JSONObject jsonActor = jsonActors.getJSONObject(i);
                     actors[i] = new Actor(jsonActor.getString("name"),jsonActor.getString("character_name"));
                 }
+                movie.setActors(actors);
+            }
+            if (json.has("directors"))
+            {
                 JSONArray jsonDirectors = json.getJSONArray("directors");
                 JSONObject jsonDirector = jsonDirectors.getJSONObject(0);
                 movie.setDirector(jsonDirector.getString("name"));
-                movie.setActors(actors);
             }
             return movie;
         }
@@ -105,6 +108,10 @@ public class Movie implements Serializable{
         if (descriptionIntro != null && getDescriptionIntro() != null)
             descriptionIntro.setText(String.valueOf(getDescriptionIntro()));
 
+        TextView director = (TextView) view.findViewById(R.id.director);
+        if (director != null && getDirector() != null)
+            director.setText("Director: " + String.valueOf(getDirector()));
+
         TextView descriptionFull = (TextView) view.findViewById(R.id.descriptionFull);
         if (descriptionFull != null && getDescriptionFull() != null)
             descriptionFull.setText(String.valueOf(getDescriptionFull()));
@@ -116,6 +123,18 @@ public class Movie implements Serializable{
         ImageView image = (ImageView) view.findViewById(R.id.image);
         if (image != null && getImage() != null)
             image.setImageBitmap(getImage());
+
+        TextView actorOne = (TextView) view.findViewById(R.id.actorOne);
+        if (actorOne != null && getActors() != null)
+            actorOne.setText(getActors()[0].getName() + " as " + getActors()[0].getCharacterName());
+
+        TextView actorTwo = (TextView) view.findViewById(R.id.actorTwo);
+        if (actorTwo != null && getActors() != null)
+            actorTwo.setText(getActors()[1].getName() + " as " + getActors()[1].getCharacterName());
+
+        TextView actorThree = (TextView) view.findViewById(R.id.actorThree);
+        if (actorThree != null && getActors() != null)
+            actorThree.setText(getActors()[2].getName() + " as " + getActors()[2].getCharacterName());
     }
 
     public String getDirector() {
