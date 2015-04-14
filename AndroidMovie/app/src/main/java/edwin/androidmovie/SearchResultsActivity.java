@@ -13,12 +13,10 @@ public class SearchResultsActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         handleIntent(getIntent());
-
    }
 
     @Override
     protected void onNewIntent(Intent intent) {
-
         handleIntent(intent);
     }
 

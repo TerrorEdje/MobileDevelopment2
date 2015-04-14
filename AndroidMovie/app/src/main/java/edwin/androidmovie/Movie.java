@@ -1,7 +1,9 @@
 package edwin.androidmovie;
 
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -22,7 +24,10 @@ public class Movie implements Serializable{
     private double rating;
     private String language;
     private String imdbCode;
+    private String youtubeCode;
     private String director;
+    private String imageUrl;
+    private transient Bitmap image;
     private String[] genres;
     private String descriptionIntro;
     private String descriptionFull;
@@ -38,8 +43,16 @@ public class Movie implements Serializable{
             if (json.has("rating")) { movie.setRating(json.getDouble("rating")); }
             if (json.has("language")) { movie.setLanguage(json.getString("language")); }
             if (json.has("imdb_code")) { movie.setImdbCode(json.getString("imdb_code")); }
+            if (json.has("yt_trailer_code")) { movie.setYoutubeCode(json.getString("yt_trailer_code")); }
             if (json.has("description_intro")) { movie.setDescriptionIntro(json.getString("description_intro")); }
             if (json.has("description_full")) { movie.setDescriptionFull(json.getString("description_full")); }
+            if (json.has("description_full")) { movie.setDescriptionFull(json.getString("description_full")); }
+            if (json.has("images")) {
+                JSONObject jsonImages = json.getJSONObject("images");
+                if (jsonImages.has("medium_cover_image")) {
+                    movie.setImageUrl(jsonImages.getString("medium_cover_image"));
+                }
+            }
             if (json.has("genres")) {
                 JSONArray jsonGenres = json.getJSONArray("genres");
                 String[] genres = new String[jsonGenres.length()];
@@ -99,6 +112,10 @@ public class Movie implements Serializable{
         TextView language = (TextView) view.findViewById(R.id.language);
         if (language != null && getLanguage() != null)
             language.setText(String.valueOf(getLanguage()));
+
+        ImageView image = (ImageView) view.findViewById(R.id.image);
+        if (image != null && getImage() != null)
+            image.setImageBitmap(getImage());
     }
 
     public String getDirector() {
@@ -125,6 +142,14 @@ public class Movie implements Serializable{
         this.year = year;
     }
 
+    public String getYoutubeCode() {
+        return youtubeCode;
+    }
+
+    public void setYoutubeCode(String youtubeCode) {
+        this.youtubeCode = youtubeCode;
+    }
+
     public int getId() {
         return id;
     }
@@ -143,6 +168,14 @@ public class Movie implements Serializable{
 
     public String getImdbCode() {
         return imdbCode;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public void setImdbCode(String imdbCode) {
@@ -179,6 +212,14 @@ public class Movie implements Serializable{
 
     public void setDescriptionFull(String descriptionFull) {
         this.descriptionFull = descriptionFull;
+    }
+
+    public Bitmap getImage() {
+        return image;
+    }
+
+    public void setImage(Bitmap image) {
+        this.image = image;
     }
 
     public Actor[] getActors() {
