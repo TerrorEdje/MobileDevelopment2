@@ -34,7 +34,8 @@ public class MovieDetailFragment extends Fragment {
      */
     public static final String ARG_ITEM_ID = "movie";
     private View view;
-    private MovieDetailActivity activity;
+    private Movie movie;
+    private AsyncMovieLoader asyncMovieLoader;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -46,11 +47,9 @@ public class MovieDetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        activity = (MovieDetailActivity) getActivity();
         if (getArguments().containsKey(ARG_ITEM_ID)) {
-            activity.setMovie((Movie) getArguments().get(ARG_ITEM_ID));
+            movie = (Movie) getArguments().get(ARG_ITEM_ID);
         }
-
     }
 
     @Override
@@ -59,19 +58,28 @@ public class MovieDetailFragment extends Fragment {
         view = rootView;
 
         // Show the dummy content as text in a TextView.
-        if (activity.getMovie() != null) {
-            activity.getMovie().ToView(view);
-            (new AsyncMovieLoader()).execute("https://yts.to/api/v2/movie_details.json?movie_id=" + activity.getMovie().getId() + "&with_images=true&with_cast=true");
+        if (movie != null) {
+            movie.ToView(view);
+            asyncMovieLoader = new AsyncMovieLoader();
+            asyncMovieLoader.execute("https://yts.to/api/v2/movie_details.json?movie_id=" + movie.getId() + "&with_images=true&with_cast=true");
         }
 
         return rootView;
+    }
+
+    public void onPause()
+    {
+        super.onPause();
+        if (asyncMovieLoader != null) {
+            asyncMovieLoader.cancel(true);
+        }
     }
 
     private class AsyncMovieLoader extends AsyncTask<String, Void, Movie> {
         @Override
         protected void onPostExecute(Movie result) {
             super.onPostExecute(result);
-            activity.setMovie(result);
+            movie = result;
             TextView loading = (TextView) view.findViewById(R.id.loading);
             loading.setText("");
             result.ToView(getView().findViewById(R.id.movie_detail));

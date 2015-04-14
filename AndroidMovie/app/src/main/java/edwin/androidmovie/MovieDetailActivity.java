@@ -2,17 +2,12 @@ package edwin.androidmovie;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 /**
@@ -27,16 +22,6 @@ import java.util.ArrayList;
 public class MovieDetailActivity extends ActionBarActivity {
     private Movie movie;
 
-    public Movie getMovie()
-    {
-        return movie;
-    }
-
-    public void setMovie(Movie movie)
-    {
-        this.movie = movie;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,19 +35,13 @@ public class MovieDetailActivity extends ActionBarActivity {
             // using a fragment transaction.
             Bundle arguments = new Bundle();
             arguments.putSerializable(MovieDetailFragment.ARG_ITEM_ID,getIntent().getSerializableExtra(MovieDetailFragment.ARG_ITEM_ID));
+            movie = (Movie) getIntent().getSerializableExtra(MovieDetailFragment.ARG_ITEM_ID);
             MovieDetailFragment fragment = new MovieDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.movie_detail_container, fragment)
                     .commit();
         }
-
-
-        /*final Button button = (Button) findViewById(R.id.like_button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-            }
-        });*/
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -87,23 +66,7 @@ public class MovieDetailActivity extends ActionBarActivity {
             return true;
         }
         else if (id == R.id.like_button) {
-            ArrayList<Movie> movies = new ArrayList<Movie>();
-            SharedPreferences prefs = getSharedPreferences("MOVIES", Context.MODE_PRIVATE);
-            try {
-                movies = (ArrayList<Movie>) ObjectSerializer.deserialize(prefs.getString("MOVIES", ObjectSerializer.serialize(new ArrayList<Movie>())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            movies.add(movie);
-            Editor editor = prefs.edit();
-            try {
-                editor.putString("MOVIES", ObjectSerializer.serialize(movies));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            editor.commit();
+            Movie.saveMovie(getSharedPreferences("MOVIES", Context.MODE_PRIVATE),movie);
         }
         return super.onOptionsItemSelected(item);
     }

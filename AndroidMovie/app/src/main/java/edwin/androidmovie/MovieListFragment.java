@@ -43,6 +43,8 @@ public class MovieListFragment extends ListFragment {
 
     public SimpleAdapter adpt;
 
+    private AsyncListViewLoader asyncListViewLoader;
+
     public interface Callbacks {
         /**
          * Callback for when an item has been selected.
@@ -71,24 +73,37 @@ public class MovieListFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        adpt = new SimpleAdapter(new ArrayList<Movie>(),getActivity());
+        adpt = new SimpleAdapter(new ArrayList<Movie>(), getActivity());
 
         setListAdapter(adpt);
 
-        (new AsyncListViewLoader()).execute("http://yts.to/api/v2/list_movies.json?sort_by=rating");
+        Bundle extras = getActivity().getIntent().getExtras();
+        if (extras != null) {
+            if (extras.getBoolean("LIKES")) {
+                return;
+            }
+        }
+        asyncListViewLoader = new AsyncListViewLoader();
+        asyncListViewLoader.execute("http://yts.to/api/v2/list_movies.json?sort_by=rating");
     }
 
-    public void ChangeList(ArrayList<Movie> movies)
-    {
+    public void ChangeList(ArrayList<Movie> movies) {
         adpt.setItemList(movies);
         adpt.notifyDataSetChanged();
     }
 
-    public void RunQuery(String url)
-    {
-        (new AsyncListViewLoader()).execute(url);
+    public void RunQuery(String url) {
+        asyncListViewLoader = new AsyncListViewLoader();
+        asyncListViewLoader.execute(url);
     }
 
+    public void onPause()
+    {
+        super.onPause();
+        if (asyncListViewLoader != null) {
+            asyncListViewLoader.cancel(true);
+        }
+    }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {

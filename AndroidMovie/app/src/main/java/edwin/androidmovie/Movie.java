@@ -1,5 +1,6 @@
 package edwin.androidmovie;
 
+import android.content.SharedPreferences;
 import android.view.View;
 import android.widget.TextView;
 
@@ -7,7 +8,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * Created by Edwin on 8-4-2015.
@@ -19,6 +22,7 @@ public class Movie implements Serializable{
     private double rating;
     private String language;
     private String imdbCode;
+    private String director;
     private String[] genres;
     private String descriptionIntro;
     private String descriptionFull;
@@ -37,21 +41,24 @@ public class Movie implements Serializable{
             if (json.has("description_intro")) { movie.setDescriptionIntro(json.getString("description_intro")); }
             if (json.has("description_full")) { movie.setDescriptionFull(json.getString("description_full")); }
             if (json.has("genres")) {
-                JSONArray jsongenres = json.getJSONArray("genres");
-                String[] genres = new String[jsongenres.length()];
-                for (int i = 0; i < jsongenres.length(); i++) {
-                    genres[i] = jsongenres.getString(i);
+                JSONArray jsonGenres = json.getJSONArray("genres");
+                String[] genres = new String[jsonGenres.length()];
+                for (int i = 0; i < jsonGenres.length(); i++) {
+                    genres[i] = jsonGenres.getString(i);
                 }
                 movie.setGenres(genres);
             }
             if (json.has("actors"))
             {
-                JSONArray jsonactors = json.getJSONArray("actors");
-                Actor[] actors = new Actor[jsonactors.length()];
-                for (int i = 0; i < jsonactors.length(); i++) {
-                    JSONObject jsonactor = jsonactors.getJSONObject(i);
-                    actors[i] = new Actor(jsonactor.getString("name"),jsonactor.getString("character_name"));
+                JSONArray jsonActors = json.getJSONArray("actors");
+                Actor[] actors = new Actor[jsonActors.length()];
+                for (int i = 0; i < jsonActors.length(); i++) {
+                    JSONObject jsonActor = jsonActors.getJSONObject(i);
+                    actors[i] = new Actor(jsonActor.getString("name"),jsonActor.getString("character_name"));
                 }
+                JSONArray jsonDirectors = json.getJSONArray("directors");
+                JSONObject jsonDirector = jsonDirectors.getJSONObject(0);
+                movie.setDirector(jsonDirector.getString("name"));
                 movie.setActors(actors);
             }
             return movie;
@@ -92,6 +99,14 @@ public class Movie implements Serializable{
         TextView language = (TextView) view.findViewById(R.id.language);
         if (language != null && getLanguage() != null)
             language.setText(String.valueOf(getLanguage()));
+    }
+
+    public String getDirector() {
+        return director;
+    }
+
+    public void setDirector(String director) {
+        this.director = director;
     }
 
     public String getTitle() {
@@ -174,4 +189,44 @@ public class Movie implements Serializable{
         this.actors = actors;
     }
 
+    public static boolean saveMovie(SharedPreferences preferences, Movie movie)
+    {
+        ArrayList<Movie> movies = new ArrayList<Movie>();
+        try {
+            movies = (ArrayList<Movie>) ObjectSerializer.deserialize(preferences.getString("MOVIES", ObjectSerializer.serialize(new ArrayList<Movie>())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        for(Movie mov : movies)
+        {
+            if (mov.getId() == movie.getId())
+            {
+                return false;
+            }
+        }
+        movies.add(movie);
+        SharedPreferences.Editor editor = preferences.edit();
+        try {
+            editor.putString("MOVIES", ObjectSerializer.serialize(movies));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        editor.commit();
+        return true;
+    }
+
+    public static ArrayList<Movie> getMovies(SharedPreferences preferences)
+    {
+        ArrayList<Movie> movies = new ArrayList<Movie>();
+        try {
+            movies = (ArrayList<Movie>) ObjectSerializer.deserialize(preferences.getString("MOVIES", ObjectSerializer.serialize(new ArrayList<Movie>())));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return movies;
+    }
 }

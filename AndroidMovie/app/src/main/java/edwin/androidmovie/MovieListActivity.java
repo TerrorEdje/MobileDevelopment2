@@ -3,17 +3,13 @@ package edwin.androidmovie;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.support.v7.widget.SearchView;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 
 /**
@@ -40,7 +36,7 @@ public class MovieListActivity extends ActionBarActivity
      * device.
      */
     private boolean mTwoPane;
-
+    private Movie movie;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.v("TEST", "TEST1111");
@@ -61,13 +57,13 @@ public class MovieListActivity extends ActionBarActivity
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
-            String value = extras.getString("URL");
-            if (value != null)
-            {
-                movieListFragment.RunQuery(value);
+            if (extras.getString("URL") != null) {
+                movieListFragment.RunQuery(extras.getString("URL"));
+            }
+            else if (extras.getBoolean("LIKES")) {
+                movieListFragment.ChangeList(Movie.getMovies(getSharedPreferences("MOVIES", Context.MODE_PRIVATE)));
             }
         }
-
         // TODO: If exposing deep links into your app, handle intents here.
     }
 
@@ -75,7 +71,10 @@ public class MovieListActivity extends ActionBarActivity
         // Inflate the menu items for use in the action bar
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu_activity_list, menu);
-
+        if (mTwoPane)
+        {
+            inflater.inflate(R.menu.menu_activity_detail,menu);
+        }
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
         searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
@@ -86,17 +85,17 @@ public class MovieListActivity extends ActionBarActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.likes_button) {
-            ArrayList<Movie> movies = new ArrayList<Movie>();
-            SharedPreferences prefs = getSharedPreferences("MOVIES", Context.MODE_PRIVATE);
-            try {
-                movies = (ArrayList<Movie>) ObjectSerializer.deserialize(prefs.getString("MOVIES", ObjectSerializer.serialize(new ArrayList<Movie>())));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            MovieListFragment movieListFragment = (MovieListFragment) getSupportFragmentManager().findFragmentById(R.id.movie_list);
-            movieListFragment.ChangeList(movies);
+            Intent i = new Intent(getApplicationContext(), MovieListActivity.class);
+            i.putExtra("LIKES",true);
+            startActivity(i);
+        }
+        else if (id == R.id.like_button && movie != null) {
+            Movie.saveMovie(getSharedPreferences("MOVIES", Context.MODE_PRIVATE),movie);
+        }
+        else if (id == R.id.home_button)
+        {
+            Intent i = new Intent(getApplicationContext(),MovieListActivity.class);
+            startActivity(i);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -111,6 +110,7 @@ public class MovieListActivity extends ActionBarActivity
             // In two-pane mode, show the detail view in this activity by
             // adding or replacing the detail fragment using a
             // fragment transaction.
+            this.movie = movie;
             Bundle arguments = new Bundle();
             arguments.putSerializable(MovieDetailFragment.ARG_ITEM_ID,movie);
             MovieDetailFragment fragment = new MovieDetailFragment();
