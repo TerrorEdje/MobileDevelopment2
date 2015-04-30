@@ -187,6 +187,7 @@ public class MovieListFragment extends ListFragment {
             {
                 dialog.dismiss();
             }
+
             adpt.setItemList(result);
             adpt.notifyDataSetChanged();
         }
